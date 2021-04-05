@@ -1,0 +1,10 @@
+version: '3.1'
+
+services:
+
+  db:
+    image: blacklabelops/hsqldb
+    environment:
+      HSQLDB_DATABASE_ALIAS: cubagcs-334284
+    ports:
+      - "9010:9001"
