@@ -17,7 +17,6 @@
 package net.gionn.cubagcs.core;
 
 import com.google.cloud.ReadChannel;
-import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
@@ -48,12 +47,12 @@ public class GoogleCloudStorageFileStorage implements FileStorageAPI {
     protected AtomicReference<Storage> storageAtomicReference = new AtomicReference<>();
 
     @EventListener
-    protected void initS3Client( AppContextStartedEvent event )
+    public void initClient( AppContextStartedEvent event )
     {
-        refreshS3Client();
+        initClient();
     }
 
-    public void refreshS3Client()
+    public void initClient()
     {
         StorageOptions storageOptions = StorageOptions.newBuilder()
                 .setProjectId( googleCloudStorageConfig.getProjectId() )
@@ -62,26 +61,26 @@ public class GoogleCloudStorageFileStorage implements FileStorageAPI {
     }
 
     @Override
-    public long saveStream(FileDescriptor fileDescr, InputStream inputStream) throws FileStorageException {
-        Preconditions.checkNotNullArgument(fileDescr.getSize());
+    public long saveStream(FileDescriptor file, InputStream inputStream) throws FileStorageException {
+        Preconditions.checkNotNullArgument(file.getSize());
         try {
-            saveFile(fileDescr, IOUtils.toByteArray(inputStream));
+            saveFile(file, IOUtils.toByteArray(inputStream));
         } catch (IOException e) {
             String message = String.format("Could not save file %s.",
-                    getFileName(fileDescr));
+                    getFileName(file));
             throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, message);
         }
-        return fileDescr.getSize();
+        return file.getSize();
     }
 
     @Override
-    public void saveFile( FileDescriptor fileDescr, byte[] data ) throws FileStorageException
+    public void saveFile( FileDescriptor file, byte[] data ) throws FileStorageException
     {
         checkNotNullArgument( data, "File content is null" );
         Storage storage = storageAtomicReference.get();
         try
         {
-            String objectName = resolveFileName( fileDescr );
+            String objectName = resolveFileName( file );
 
             BlobId blobId = BlobId.of( googleCloudStorageConfig.getBucket(), objectName );
             BlobInfo blobInfo = BlobInfo.newBuilder( blobId )
@@ -90,69 +89,65 @@ public class GoogleCloudStorageFileStorage implements FileStorageAPI {
         }
         catch ( Exception e )
         {
-            String message = String.format( "Could not save file %s.", getFileName( fileDescr ) );
+            String message = String.format( "Could not save file %s.", getFileName( file ) );
             throw new FileStorageException( FileStorageException.Type.IO_EXCEPTION, message, e );
         }
     }
 
     @Override
-    public void removeFile( FileDescriptor fileDescr ) throws FileStorageException
+    public void removeFile( FileDescriptor file ) throws FileStorageException
     {
         Storage storage = storageAtomicReference.get();
         try
         {
-            String objectName = resolveFileName( fileDescr );
+            String objectName = resolveFileName( file );
             storage.delete( googleCloudStorageConfig.getBucket(), objectName );
         }
         catch ( Exception e )
         {
-            String message = String.format( "Could not delete file %s.", getFileName( fileDescr ) );
+            String message = String.format( "Could not delete file %s.", getFileName( file ) );
             throw new FileStorageException( FileStorageException.Type.IO_EXCEPTION, message, e );
         }
     }
 
     @Override
-    public InputStream openStream( FileDescriptor fileDescr ) throws FileStorageException
+    public InputStream openStream( FileDescriptor file ) throws FileStorageException
     {
         Storage storage = storageAtomicReference.get();
 
-        try ( ReadChannel reader = storage.reader( googleCloudStorageConfig.getBucket(),
-                resolveFileName( fileDescr ) ) )
+        try
         {
+            ReadChannel reader = storage.reader( googleCloudStorageConfig.getBucket(), resolveFileName( file ) );
             return Channels.newInputStream( reader );
         }
         catch ( Exception e )
         {
-            String message = String.format( "Could not load file %s.", getFileName( fileDescr ) );
+            String message = String.format( "Could not load file %s.", getFileName( file ) );
             throw new FileStorageException( FileStorageException.Type.IO_EXCEPTION, message );
         }
     }
 
     @Override
-    public byte[] loadFile(FileDescriptor fileDescr) throws FileStorageException {
-        try (InputStream inputStream = openStream(fileDescr)) {
+    public byte[] loadFile(FileDescriptor file) throws FileStorageException {
+        try (InputStream inputStream = openStream(file)) {
             return IOUtils.toByteArray(inputStream);
         } catch (IOException e) {
-            throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, fileDescr.getId().toString(), e);
+            throw new FileStorageException(FileStorageException.Type.IO_EXCEPTION, file.getId().toString(), e);
         }
     }
 
     @Override
-    public boolean fileExists(FileDescriptor fileDescr)
+    public boolean fileExists(FileDescriptor file)
     {
         Storage storage = storageAtomicReference.get();
-        Blob blob = storage.get( googleCloudStorageConfig.getBucket(), resolveFileName( fileDescr ) );
-        return blob.exists();
+        return storage.get( googleCloudStorageConfig.getBucket(), resolveFileName( file ) ) != null;
     }
 
-    protected String resolveFileName(FileDescriptor fileDescr) {
-        return getStorageDir(fileDescr.getCreateDate()) + "/" + getFileName(fileDescr);
+    private String resolveFileName(FileDescriptor file) {
+        return getStorageDir(file.getCreateDate()) + "/" + getFileName(file);
     }
 
-    /**
-     * INTERNAL. Don't use in application code.
-     */
-    protected String getStorageDir(Date createDate) {
+    private String getStorageDir(Date createDate) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(createDate);
         int year = cal.get(Calendar.YEAR);
@@ -164,7 +159,7 @@ public class GoogleCloudStorageFileStorage implements FileStorageAPI {
                 StringUtils.leftPad(String.valueOf(day), 2, '0'));
     }
 
-    protected String getFileName( FileDescriptor fileDescriptor )
+    private String getFileName( FileDescriptor fileDescriptor )
     {
         if ( StringUtils.isNotBlank( fileDescriptor.getExtension() ) )
         {
@@ -176,10 +171,5 @@ public class GoogleCloudStorageFileStorage implements FileStorageAPI {
             return fileDescriptor.getId()
                     .toString();
         }
-    }
-
-    protected String getBucket()
-    {
-        return googleCloudStorageConfig.getBucket();
     }
 }

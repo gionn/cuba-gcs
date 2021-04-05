@@ -30,7 +30,7 @@ public class GoogleCloudStorageManager implements GoogleCloudStorageManagerMBean
     @Override
     public String refreshS3Client() {
         if (fileStorageAPI instanceof GoogleCloudStorageFileStorage ) {
-            ((GoogleCloudStorageFileStorage) fileStorageAPI).refreshS3Client();
+            ((GoogleCloudStorageFileStorage) fileStorageAPI).initClient();
             return "Refreshed successfully";
         }
         return "Not an Google Cloud Storage - refresh attempt ignored";
