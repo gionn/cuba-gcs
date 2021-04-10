@@ -15,6 +15,10 @@ buildscript {
     }
 }
 
+plugins {
+    id("maven-publish")
+}
+
 def modulePrefix = 'app'
 
 def globalModule = project(":${modulePrefix}-global")
@@ -63,6 +67,27 @@ configure([globalModule, coreModule, webModule]) {
 
         testLogging {
             exceptionFormat = 'full'
+        }
+    }
+}
+
+subprojects {
+    apply plugin: "maven-publish"
+    publishing {
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/gionn/cuba-gcs")
+                credentials {
+                    username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+                    password = project.findProperty("gpr.key") ?: System.getenv("PASSWORD")
+                }
+            }
+        }
+        publications {
+            gpr(MavenPublication) {
+                from(components.java)
+            }
         }
     }
 }
