@@ -45,8 +45,7 @@ configure([globalModule, coreModule, webModule]) {
     apply(plugin: 'cuba')
 
     dependencies {
-        implementation platform('com.google.cloud:libraries-bom:19.2.1')
-        compile('com.google.cloud:google-cloud-storage')
+        compile('com.google.cloud:google-cloud-storage:1.113.14')
         testImplementation(platform('org.junit:junit-bom:5.7.1'))
         testImplementation('org.junit.jupiter:junit-jupiter')
     }
