@@ -15,10 +15,6 @@ buildscript {
     }
 }
 
-plugins {
-    id("maven-publish")
-}
-
 def modulePrefix = 'gcs'
 
 def globalModule = project(":${modulePrefix}-global")
@@ -34,6 +30,12 @@ cuba {
         group = 'net.gionn.cubagcs'
         version = '0.0.1'
         isSnapshot = true
+    }
+
+    uploadRepository {
+        url = 'https://maven.pkg.github.com/gionn/cuba-gcs'
+        user = rootProject.findProperty('githubUser') ?: System.getenv("USERNAME")
+        password = rootProject.findProperty('githubToken') ?: System.getenv("PASSWORD")
     }
 }
 
@@ -66,27 +68,6 @@ configure([globalModule, coreModule, webModule]) {
 
         testLogging {
             exceptionFormat = 'full'
-        }
-    }
-}
-
-subprojects {
-    apply plugin: "maven-publish"
-    publishing {
-        repositories {
-            maven {
-                name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/gionn/cuba-gcs")
-                credentials {
-                    username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-                    password = project.findProperty("gpr.key") ?: System.getenv("PASSWORD")
-                }
-            }
-        }
-        publications {
-            gpr(MavenPublication) {
-                from(components.java)
-            }
         }
     }
 }
