@@ -19,7 +19,7 @@ plugins {
     id("maven-publish")
 }
 
-def modulePrefix = 'app'
+def modulePrefix = 'gcs'
 
 def globalModule = project(":${modulePrefix}-global")
 def coreModule = project(":${modulePrefix}-core")
@@ -32,7 +32,7 @@ apply(plugin: 'cuba')
 cuba {
     artifact {
         group = 'net.gionn.cubagcs'
-        version = '0.1'
+        version = '0.0.1'
         isSnapshot = true
     }
 }

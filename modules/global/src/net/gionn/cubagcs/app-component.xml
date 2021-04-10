@@ -3,21 +3,21 @@
                dependsOn="com.haulmont.cuba">
 
     <module name="global" blocks="*">
-        <artifact name="app-global" appJar="true"/>
+        <artifact name="gcs-global" appJar="true"/>
 
         <property name="cuba.persistenceConfig" value="+net/gionn/cubagcs/persistence.xml"/>
         <property name="cuba.metadataConfig" value="+net/gionn/cubagcs/metadata.xml"/>
         <property name="cuba.viewsConfig" value="+net/gionn/cubagcs/views.xml"/>
     </module>
     <module name="core" dependsOn="global" blocks="core">
-        <artifact name="app-core" appJar="true"/>
+        <artifact name="gcs-core" appJar="true"/>
 
         <property name="cuba.springContextConfig" value="+net/gionn/cubagcs/spring.xml"/>
         <property name="cuba.mainMessagePack" value="+net.gionn.cubagcs.core"/>
     </module>
     <module name="web" dependsOn="global" blocks="web">
-        <artifact name="app-web" appJar="true"/>
-        <artifact name="app-web" classifier="web" ext="zip" configuration="webcontent"/>
+        <artifact name="gcs-web" appJar="true"/>
+        <artifact name="gcs-web" classifier="web" ext="zip" configuration="webcontent"/>
 
         <property name="cuba.springContextConfig" value="+net/gionn/cubagcs/web-spring.xml"/>
         <property name="cuba.dispatcherSpringContextConfig" value="+net/gionn/cubagcs/web-dispatcher-spring.xml"/>
