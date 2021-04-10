@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<app-component xmlns="http://schemas.haulmont.com/cuba/app-component.xsd"
+               dependsOn="com.haulmont.cuba">
+
+    <module name="global" blocks="*">
+        <artifact name="app-global" appJar="true"/>
+
+        <property name="cuba.persistenceConfig" value="+net/gionn/cubagcs/persistence.xml"/>
+        <property name="cuba.metadataConfig" value="+net/gionn/cubagcs/metadata.xml"/>
+        <property name="cuba.viewsConfig" value="+net/gionn/cubagcs/views.xml"/>
+    </module>
+    <module name="core" dependsOn="global" blocks="core">
+        <artifact name="app-core" appJar="true"/>
+
+        <property name="cuba.springContextConfig" value="+net/gionn/cubagcs/spring.xml"/>
+        <property name="cuba.mainMessagePack" value="+net.gionn.cubagcs.core"/>
+    </module>
+    <module name="web" dependsOn="global" blocks="web">
+        <artifact name="app-web" appJar="true"/>
+        <artifact name="app-web" classifier="web" ext="zip" configuration="webcontent"/>
+
+        <property name="cuba.springContextConfig" value="+net/gionn/cubagcs/web-spring.xml"/>
+        <property name="cuba.dispatcherSpringContextConfig" value="+net/gionn/cubagcs/web-dispatcher-spring.xml"/>
+        <property name="cuba.windowConfig" value="+net/gionn/cubagcs/web-screens.xml"/>
+        <property name="cuba.menuConfig" value="+net/gionn/cubagcs/web-menu.xml"/>
+        <property name="cuba.permissionConfig" value="+net/gionn/cubagcs/web-permissions.xml"/>
+        <property name="cuba.mainMessagePack" value="+net.gionn.cubagcs.web"/>
+    </module>
+</app-component>
