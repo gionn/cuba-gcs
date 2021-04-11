@@ -28,9 +28,9 @@ public class GoogleCloudStorageManager implements GoogleCloudStorageManagerMBean
     private FileStorageAPI fileStorageAPI;
 
     @Override
-    public String refreshS3Client() {
+    public String getClient() {
         if (fileStorageAPI instanceof GoogleCloudStorageFileStorage ) {
-            ((GoogleCloudStorageFileStorage) fileStorageAPI).initClient();
+            ((GoogleCloudStorageFileStorage) fileStorageAPI).getClient();
             return "Refreshed successfully";
         }
         return "Not an Google Cloud Storage - refresh attempt ignored";
