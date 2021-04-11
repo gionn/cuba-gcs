@@ -57,4 +57,4 @@ jobs:
         env:
           USERNAME: ${{ github.actor }}
           PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-        #if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/master'
