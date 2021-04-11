@@ -15,7 +15,7 @@ buildscript {
     }
 }
 
-def modulePrefix = 'app'
+def modulePrefix = 'gcs'
 
 def globalModule = project(":${modulePrefix}-global")
 def coreModule = project(":${modulePrefix}-core")
@@ -28,8 +28,14 @@ apply(plugin: 'cuba')
 cuba {
     artifact {
         group = 'net.gionn.cubagcs'
-        version = '0.1'
+        version = '0.0.1'
         isSnapshot = true
+    }
+
+    uploadRepository {
+        url = 'https://maven.pkg.github.com/gionn/cuba-gcs'
+        user = rootProject.findProperty('githubUser') ?: System.getenv("USERNAME")
+        password = rootProject.findProperty('githubToken') ?: System.getenv("PASSWORD")
     }
 }
 
@@ -45,7 +51,6 @@ configure([globalModule, coreModule, webModule]) {
     apply(plugin: 'cuba')
 
     dependencies {
-        compile('com.google.cloud:google-cloud-storage:1.113.14')
         testImplementation(platform('org.junit:junit-bom:5.7.1'))
         testImplementation('org.junit.jupiter:junit-jupiter')
     }
@@ -74,6 +79,7 @@ configure(globalModule) {
             runtime('javax.xml.bind:jaxb-api:2.3.1')
             runtime('org.glassfish.jaxb:jaxb-runtime:2.3.1')
         }
+        compile 'com.google.cloud:google-cloud-storage:1.113.14'
     }
 
     entitiesEnhancing {

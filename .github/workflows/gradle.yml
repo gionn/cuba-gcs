@@ -51,3 +51,10 @@ jobs:
 
       - name: Build
         run: ./gradlew build
+
+      - name: Publish
+        run: ./gradlew uploadArchives
+        env:
+          USERNAME: ${{ github.actor }}
+          PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        if: github.ref == 'refs/heads/master'
