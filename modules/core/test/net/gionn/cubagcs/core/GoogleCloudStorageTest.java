@@ -37,7 +37,7 @@ public class GoogleCloudStorageTest
 
         fileStorageAPI = new GoogleCloudStorageFileStorage();
         fileStorageAPI.googleCloudStorageConfig = AppBeans.get( Configuration.class).getConfig(GoogleCloudStorageConfig.class);
-        fileStorageAPI.initClient();
+        fileStorageAPI.getClient();
 
         assertNotNull(fileStorageAPI.googleCloudStorageConfig.getBucket());
         assertNotNull(fileStorageAPI.googleCloudStorageConfig.getProjectId());

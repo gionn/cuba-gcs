@@ -26,5 +26,5 @@ public interface GoogleCloudStorageManagerMBean
 {
 
     @ManagedOperation(description = "Refreshes Amazon S3 client")
-    String refreshS3Client();
+    String getClient();
 }

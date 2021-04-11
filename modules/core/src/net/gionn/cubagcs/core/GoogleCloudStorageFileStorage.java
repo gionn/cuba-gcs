@@ -47,12 +47,12 @@ public class GoogleCloudStorageFileStorage implements FileStorageAPI {
     protected AtomicReference<Storage> storageAtomicReference = new AtomicReference<>();
 
     @EventListener
-    public void initClient( AppContextStartedEvent event )
+    public void getClient( AppContextStartedEvent event )
     {
-        initClient();
+        getClient();
     }
 
-    public void initClient()
+    public void getClient()
     {
         StorageOptions storageOptions = StorageOptions.newBuilder()
                 .setProjectId( googleCloudStorageConfig.getProjectId() )
