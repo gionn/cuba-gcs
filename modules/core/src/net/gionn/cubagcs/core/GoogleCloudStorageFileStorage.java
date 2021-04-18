@@ -28,6 +28,8 @@ import com.haulmont.cuba.core.global.FileStorageException;
 import com.haulmont.cuba.core.sys.events.AppContextStartedEvent;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 
 import javax.inject.Inject;
@@ -41,6 +43,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import static com.haulmont.bali.util.Preconditions.checkNotNullArgument;
 
 public class GoogleCloudStorageFileStorage implements FileStorageAPI {
+
+    private static final Logger log = LoggerFactory.getLogger( GoogleCloudStorageFileStorage.class );
+
     @Inject
     protected GoogleCloudStorageConfig googleCloudStorageConfig;
 
@@ -86,6 +91,7 @@ public class GoogleCloudStorageFileStorage implements FileStorageAPI {
             BlobInfo blobInfo = BlobInfo.newBuilder( blobId )
                     .build();
             storage.create( blobInfo, data );
+            log.info( "Created file {}", objectName );
         }
         catch ( Exception e )
         {
@@ -102,6 +108,7 @@ public class GoogleCloudStorageFileStorage implements FileStorageAPI {
         {
             String objectName = resolveFileName( file );
             storage.delete( googleCloudStorageConfig.getBucket(), objectName );
+            log.info( "Deleted file {}", objectName );
         }
         catch ( Exception e )
         {
